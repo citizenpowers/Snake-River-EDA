@@ -5,16 +5,22 @@ library(ggplot2)
 library(lubridate)
 library(RColorBrewer)
 library(colorspace)
-
+library(readxl)
+library(kable)
 
 # Import Data -------------------------------------------------------------
 
-
+#work links
 SK02_WQ_Data <- read_csv("//ad.sfwmd.gov/dfsroot/userdata/mpowers/Desktop/Snake-River-EDA/Data/SK02. WQ Data.csv")
 SK09_WQ_Data <- read_csv("//ad.sfwmd.gov/dfsroot/userdata/mpowers/Desktop/Snake-River-EDA/Data/SK09 WQ.csv")
-
 S29_Flow <- read_csv("//ad.sfwmd.gov/dfsroot/userdata/mpowers/Desktop/Snake-River-EDA/Data/S29 Flow .csv" , skip = 3)
 S30C_Flow <- read_csv("//ad.sfwmd.gov/dfsroot/userdata/mpowers/Desktop/Snake-River-EDA/Data/S30c Flow.csv",  skip = 3)
+
+#home links 
+SK02_WQ_Data <- read_csv("Data/SK02. WQ Data.csv")
+SK09_WQ_Data <- read_csv("Data/SK09 WQ.csv")
+S29_Flow <- read_csv("Data/S29 Flow .csv", skip = 3)
+S30C_Flow <- read_csv("Data/S30C Flow.csv", skip = 3)
 
 study_analytes <- c("FECAL COLIFORM, MPN","PHOSPHATE, TOTAL AS P","PHOSPHATE, ORTHO AS P","AMMONIA-N","NITRATE+NITRITE-N")
 
@@ -23,6 +29,7 @@ study_analytes <- c("FECAL COLIFORM, MPN","PHOSPHATE, TOTAL AS P","PHOSPHATE, OR
 
 Snake_Creek_WQ <- bind_rows(SK02_WQ_Data ,SK09_WQ_Data) %>%
 filter(`Test Name` %in% study_analytes ) %>%
+filter() %>%  
 mutate(Date=parse_date_time(`Collection_Date`,"%d%b%y %H%S")) %>%
 mutate(`Join Date`=as.Date(Date)) %>%  
 mutate(Value=ifelse(`Test Name`=="PHOSPHATE, ORTHO AS P" & `Remark Code`=="U",0.002, Value)) %>%  #substituting 0.002 for undetected values
@@ -60,7 +67,7 @@ write_csv(Snake_Creek_Flow_Summary,"./Data/Snake_Creek_Flow_Summary.csv")
 # Figures Time Series -----------------------------------------------------------------
 #Flow time series plot
 ggplot(Snake_Creek_Flow,aes(`Label Date`,Flow,fill=`Station`,color=`Station`))+
-scale_x_datetime(date_labels = "%B",date_breaks = "1 month")+facet_wrap(~Station,scales="free")+
+scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+facet_wrap(~Station,scales="free")+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+xlab("Month")+
 ylab(expression(Flow~(cfs)))+labs(title="Flow Measured in Snake Creek at at S30C and S29S")+
@@ -71,17 +78,17 @@ ggsave(plot = last_plot(),filename="./Figures/Seasonal Flow.jpeg",width =16, hei
 
 #TP time series plot
 ggplot(filter(Snake_Creek_WQ,`Test Name`=="PHOSPHATE, TOTAL AS P"),aes(`Label Date`,Value,fill=`Station ID`,color=`Station ID`))+
-scale_x_datetime(date_labels = "%B",date_breaks = "1 month")+
+scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+xlab("Month")+
 ylab(expression(TP~(m~g/L)))+coord_cartesian(ylim=c(0,0.04))+labs(title="PHOSPHATE, TOTAL AS P")+
 geom_point(shape=21,color="black")+geom_smooth()+theme_bw()
 
-ggsave(plot = last_plot(),filename="./Figures/Seasonal TP.jpeg",width =10, height =8, units = "in")
+ggsave(plot = last_plot(),filename="./Figures/Seasonal TP.jpeg",width =8, height =9, units = "in")
 
 #OPO4 time series plot
 ggplot(filter(Snake_Creek_WQ,`Test Name`=="PHOSPHATE, ORTHO AS P"),aes(`Label Date`,Value,fill=`Station ID`,color=`Station ID`))+
-scale_x_datetime(date_labels = "%B",date_breaks = "1 month")+
+scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+labs(title="PHOSPHATE, ORTHO AS P")+
 ylab(expression(OPO4~(m~g/L)))+xlab("Month")+coord_cartesian(ylim=c(0,0.02))+
@@ -91,7 +98,7 @@ ggsave(plot = last_plot(),filename="./Figures/Seasonal OPO4.jpeg",width =8, heig
 
 #AMMONIA-N time series plot
 ggplot(filter(Snake_Creek_WQ,`Test Name`=="AMMONIA-N"),aes(`Label Date`,Value,fill=`Station ID`,color=`Station ID`))+
-scale_x_datetime(date_labels = "%B",date_breaks = "1 month")+
+scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
 ylab(expression(AMMONIA-N~(m~g/L)))+xlab("Month")+labs(title="AMMONIA-N")+
@@ -101,7 +108,7 @@ ggsave(plot = last_plot(),filename="./Figures/Seasonal Ammonia.jpeg",width =8, h
 
 #NITRATE+NITRITE-N time series plot
 ggplot(filter(Snake_Creek_WQ,`Test Name`=="NITRATE+NITRITE-N"),aes(`Label Date`,Value,fill=`Station ID`,color=`Station ID`))+
-scale_x_datetime(date_labels = "%B",date_breaks = "1 month")+
+scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
 ylab(expression(NITRATE+NITRITE-N~(m~g/L)))+xlab("Month")+labs(title="NITRATE+NITRITE-N")+
@@ -111,7 +118,7 @@ ggsave(plot = last_plot(),filename="./Figures/Seasonal NOx.jpeg",width =8, heigh
 
 #FECAL COLIFORM, time series  MPN plot
 ggplot(filter(Snake_Creek_WQ,`Test Name`=="FECAL COLIFORM, MPN"),aes(`Label Date`,Value,fill=`Station ID`,color=`Station ID`))+
-scale_x_datetime(date_labels = "%B",date_breaks = "1 month")+
+scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
 ylab(expression(FECAL~COLIFORM~(MPN/100)))+xlab("Month")+labs(title="FECAL COLIFORM, MPN")+
@@ -127,7 +134,7 @@ ggplot(filter(Snake_Creek_WQ_Flow,`Test Name`=="PHOSPHATE, TOTAL AS P"),aes(Flow
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
 ylab(expression(TP~(m~g/L)))+coord_cartesian(ylim=c(0,0.04))+labs(title="PHOSPHATE, TOTAL AS P")+xlab("Flow (cfs)")+
-geom_point(shape=21,color="black")+geom_smooth()+theme_bw()
+geom_point(shape=21,color="black")+geom_smooth(method="lm")+theme_bw()
 
 ggsave(plot = last_plot(),filename="./Figures/TP vs Flow.jpeg",width =8, height =9, units = "in")
 

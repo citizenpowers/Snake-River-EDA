@@ -6,24 +6,42 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = F,warning = FALSE, message = FALSE)
+library(kableExtra)
+library(readr)
+library(cowplot)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Purpose  
+The objective of this report is to provide summarize historical water quality (WQ) and hydrologic data from Snake Creek (C-9 Canal). This summary will be used for the design of water treatment technology facility. 
 
 
-```{r figure_1, fig.cap="Monitoring Stations on Snake Creek"}
-knitr::include_graphics("./Figures/Snake Creek Sampling Map.pdf")
+### About the Data
+
+Historical WQ data was gathered from two inactive stations on Snake Creek, SK02 and SK09. Station SK09 is located approximately 3 miles upstream of the testing facility and SK02 is located at the outflow of Snake Creek at S29 structure (Figure 1). Unfortunately sampling at these stations was discontinued in 2014 so the data isn't very  current but it is better than no data. The hydrologic record is much more complete and current. Flow from the outflow of the river was measured at S29S and near the head of the river at S30C. All data was downloaded from the SFWMD's publicly available database https://apps.sfwmd.gov/dbhydroInsights/#/homepage 3/18/2025. 
 
 
+
+```{r figure_1,echo=FALSE, fig.cap="Monitoring Stations on Snake Creek"}
+knitr::include_graphics("./Figures/Snake Creek Sampling Map.jpg")
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+### Water quality and flow summaries
+
+```{r Table 1, echo=FALSE }
+knitr::kable(read_csv("Data/Snake_Creek_WQ_summary.csv"),caption = "Table 1: Summary Stats of SK09 and SK02") %>% kable_material(c("striped", "hover"))
+```
+
+```{r Table 2, echo=FALSE }
+knitr::kable( read_csv("Data/Snake_Creek_Flow_Summary.csv"),caption = "Table 2: Summary Stats of flow data from S29S and S30C") %>% kable_material(c("striped", "hover"))
+```
 
 
+### Seasonal Patterns and Relationships with Flow
 
+```{r figure_2, echo=FALSE,fig.cap="Seasonal TP"}
+knitr::include_graphics(c("./Figures/Seasonal TP.jpeg","./Figures/TP vs Flow.jpeg"))
+ggdraw() + draw_image("./Figures/Seasonal TP.jpeg", width = 0.5) + draw_image("./Figures/TP vs Flow.jpeg", width = 0.5, x = 0.5)
+```
