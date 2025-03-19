@@ -6,7 +6,8 @@ library(lubridate)
 library(RColorBrewer)
 library(colorspace)
 library(readxl)
-library(kable)
+
+library(Rccp)
 
 # Import Data -------------------------------------------------------------
 
@@ -65,6 +66,7 @@ write_csv(Snake_Creek_Flow_Summary,"./Data/Snake_Creek_Flow_Summary.csv")
 
 
 # Figures Time Series -----------------------------------------------------------------
+
 #Flow time series plot
 ggplot(Snake_Creek_Flow,aes(`Label Date`,Flow,fill=`Station`,color=`Station`))+
 scale_x_datetime(date_labels = "%b",date_breaks = "1 month")+facet_wrap(~Station,scales="free")+
@@ -133,7 +135,7 @@ ggsave(plot = last_plot(),filename="./Figures/Seasonal Fecal Coliform.jpeg",widt
 ggplot(filter(Snake_Creek_WQ_Flow,`Test Name`=="PHOSPHATE, TOTAL AS P"),aes(Flow,Value,fill=`Station ID`,color=`Station ID`))+
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
-ylab(expression(TP~(m~g/L)))+coord_cartesian(ylim=c(0,0.04))+labs(title="PHOSPHATE, TOTAL AS P")+xlab("Flow (cfs)")+
+ylab(expression(TP~(m~g/L)))+coord_cartesian(ylim=c(0,0.04))+labs(title="TP vs Flow")+xlab("Flow (cfs)")+
 geom_point(shape=21,color="black")+geom_smooth(method="lm")+theme_bw()
 
 ggsave(plot = last_plot(),filename="./Figures/TP vs Flow.jpeg",width =8, height =9, units = "in")
@@ -152,7 +154,7 @@ ggplot(filter(Snake_Creek_WQ_Flow,`Test Name`=="AMMONIA-N"),aes(Flow,Value,fill=
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
 ylab(expression(AMMONIA-N~(m~g/L)))+labs(title="AMMONIA-N")+xlab("Flow (cfs)")+
-geom_point(shape=21,color="black")+geom_smooth()+theme_bw()
+geom_point(shape=21,color="black")+geom_smooth(method="lm")+theme_bw()
 
 ggsave(plot = last_plot(),filename="./Figures/AMMONIA-N vs Flow.jpeg",width =8, height =9, units = "in")
 
@@ -161,7 +163,7 @@ ggplot(filter(Snake_Creek_WQ_Flow,`Test Name`=="NITRATE+NITRITE-N"),aes(Flow,Val
 scale_colour_manual(values = c("#e9a3c9", "#a1d76a"))+
 scale_fill_manual(values = c("#e9a3c9", "#a1d76a"))+
 ylab(expression(NITRATE+NITRITE-N~(m~g/L)))+labs(title="NITRATE+NITRITE-N")+xlab("Flow (cfs)")+
-geom_point(shape=21,color="black")+geom_smooth()+theme_bw()
+geom_point(shape=21,color="black")+geom_smooth(method="lm")+theme_bw()
 
 ggsave(plot = last_plot(),filename="./Figures/NITRATE+NITRITE-N vs Flow.jpeg",width =8, height =9, units = "in")
 
